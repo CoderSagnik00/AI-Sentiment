@@ -8,6 +8,8 @@ import InputBox from './components/InputBox';
 import SentimentCard from './components/SentimentCard';
 import Loader from './components/Loader';
 
+import axios from 'axios'
+
 const Page = () => {
   const [isStart, setIsStart] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,17 +22,27 @@ const Page = () => {
   };
 
   // Handle sentiment analysis (simulated)
-  const handleAnalyze = (text: string) => {
-    setLoading(true);
-    setTimeout(() => {
-      const result = text.includes('happy')
+  const handleAnalyze = async (text: string) => {
+      setLoading(true);
+      const resp = await fetch("http://localhost:5000/api/predict", {
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({comments:text})
+      }).then(async (response) => {
+        const data = await response.json();
+        setLoading(false);
+        return data;
+      })
+      const result = resp['response'] === 1
         ? 'positive'
-        : text.includes('sad')
+        : resp['response'] === 0
         ? 'negative'
         : 'neutral';
       setSentiment(result);
-      setLoading(false);
-    }, 2000); // Simulated delay
+      console.log(resp);
+      
   };
 
   // Handle user feedback
