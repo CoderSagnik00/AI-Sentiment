@@ -17,13 +17,27 @@ const SentimentCard = ({ sentiment, onFeedback }: { sentiment: string; onFeedbac
     setIsDisliked(true);
   };
 
-  const handleCorrectSentiment = (newSentiment: string) => {
+  const handleCorrectSentiment = async (newSentiment: string) => {
     const correctedSentiment = newSentiment; // Store the corrected sentiment in a constant
     console.log('Corrected Sentiment:', correctedSentiment);  // Logging the corrected sentiment
 
     setCorrectSentiment(newSentiment);
     setIsSentimentCorrected(true);  // Mark sentiment as corrected
     setIsDisliked(false); // Reset dislike state after correction
+
+    // API Integration
+    await fetch("http://localhost:5000/api/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fixResp: correctedSentiment
+      })
+    }).then(async (response) => {
+      const data = await response.json();
+      console.log(data['success']);
+    })
   };
 
   return (
@@ -42,11 +56,11 @@ const SentimentCard = ({ sentiment, onFeedback }: { sentiment: string; onFeedbac
           <p className="text-lg text-white mb-6">
             The sentiment of the text is <span className="font-semibold">{sentiment}</span>.
           </p>
-          <FeedbackButtons 
+          <FeedbackButtons
             onFeedback={(feedback) => {
               onFeedback(feedback);
               if (feedback === 'dislike') handleDislike();
-            }} 
+            }}
             disabled={isSentimentCorrected} // Disable buttons if sentiment is corrected
           />
         </motion.div>
