@@ -8,7 +8,6 @@ import InputBox from './components/InputBox';
 import SentimentCard from './components/SentimentCard';
 import Loader from './components/Loader';
 
-import axios from 'axios'
 
 const Page = () => {
   const [isStart, setIsStart] = useState(false);
